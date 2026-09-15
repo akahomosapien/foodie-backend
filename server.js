@@ -2,6 +2,10 @@ import "dotenv/config";
 import app from "./app.js";
 import connectDB from "./src/config/db.config.js";
 
+//MongoDB DNS Lookup fix, now set to OpenDNS from default windows
+import { setServers } from "node:dns/promises";
+setServers(["1.1.1.1", ["8.8.8.8"]]);
+
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
