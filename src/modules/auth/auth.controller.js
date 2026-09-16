@@ -37,3 +37,9 @@ export const signIn = asyncHandler(async (req, res) => {
 
   successResponse(res, "Logged in successfully", data.status, 200);
 });
+
+export const signout = asyncHandler(async (req, res) => {
+  res.clearCookie("token");
+
+  successResponse(res, "Logged out successfully", true, 200);
+});
