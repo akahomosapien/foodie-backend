@@ -4,7 +4,7 @@ import connectDB from "./src/config/db.config.js";
 
 //MongoDB DNS Lookup fix, now set to OpenDNS from default windows
 import { setServers } from "node:dns/promises";
-setServers(["1.1.1.1", ["8.8.8.8"]]);
+setServers(["1.1.1.1", "8.8.8.8"]);
 
 const PORT = process.env.PORT || 5000;
 

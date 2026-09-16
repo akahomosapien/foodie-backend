@@ -1,0 +1,25 @@
+import asyncHandler from "#middlewares/async.middleware.js";
+import successResponse from "#shared/utils/apiResponse.util.js";
+import CustomError from "#shared/utils/CustomError.util.js";
+import setAuthCookie from "#shared/utils/setCookie.util.js";
+import { signUpService } from "./auth.service.js";
+
+export const signUp = asyncHandler(async (req, res) => {
+  const { fullName, email, password, mobile, role } = req.body;
+
+  if (!fullName || !email || !mobile || !role) {
+    throw new CustomError("All mandatory fields are required");
+  }
+  if (password && password.length < 6) {
+    throw new CustomError("Password must be atleast 6 characters");
+  }
+  if (mobile.length < 10) {
+    throw new CustomError("Mobile No must be atleast 10 digits");
+  }
+
+  const data = await signUpService({ fullName, email, password, mobile, role });
+  //parse in cookies
+  setAuthCookie(res, data.token);
+
+  successResponse(res, "You are registered successfully", data.user, 201);
+});
