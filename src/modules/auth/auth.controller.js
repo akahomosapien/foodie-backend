@@ -2,7 +2,7 @@ import asyncHandler from "#middlewares/async.middleware.js";
 import successResponse from "#shared/utils/apiResponse.util.js";
 import CustomError from "#shared/utils/CustomError.util.js";
 import setAuthCookie from "#shared/utils/setCookie.util.js";
-import { signUpService } from "./auth.service.js";
+import { signInService, signUpService } from "./auth.service.js";
 
 export const signUp = asyncHandler(async (req, res) => {
   const { fullName, email, password, mobile, role } = req.body;
@@ -22,4 +22,18 @@ export const signUp = asyncHandler(async (req, res) => {
   setAuthCookie(res, data.token);
 
   successResponse(res, "You are registered successfully", data.user, 201);
+});
+
+export const signIn = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new CustomError("All mandatory fields are required");
+  }
+
+  const data = await signInService({ email, password });
+
+  //parse in cookies
+  setAuthCookie(res, data.token);
+
+  successResponse(res, "Logged in successfully", data.status, 200);
 });

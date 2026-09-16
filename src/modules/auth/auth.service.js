@@ -31,3 +31,20 @@ export const signUpService = async ({
 
   return { user, token };
 };
+
+export const signInService = async ({ email, password }) => {
+  //find user
+  const user = await User.findOne({ email });
+  if (!user) throw new CustomError("User not found", 404);
+
+  //check password
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new CustomError("Incorrect Password", 400);
+  }
+
+  //generate token
+  const token = await generateToken({ id: user._id, expiry: "7d" });
+
+  return { status: true, token };
+};
