@@ -2,7 +2,11 @@ import asyncHandler from "#middlewares/async.middleware.js";
 import successResponse from "#shared/utils/apiResponse.util.js";
 import CustomError from "#shared/utils/CustomError.util.js";
 import setAuthCookie from "#shared/utils/setCookie.util.js";
-import { signInService, signUpService } from "./auth.service.js";
+import {
+  sendOtpService,
+  signInService,
+  signUpService,
+} from "./auth.service.js";
 
 export const signUp = asyncHandler(async (req, res) => {
   const { fullName, email, password, mobile, role } = req.body;
@@ -42,4 +46,13 @@ export const signout = asyncHandler(async (req, res) => {
   res.clearCookie("token");
 
   successResponse(res, "Logged out successfully", true, 200);
+});
+
+export const sendOtp = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) throw new CustomError("Email is required", 422);
+  const data = await sendOtpService({ email });
+
+  successResponse(res, "OTP sent to email successfully", data, 200);
 });

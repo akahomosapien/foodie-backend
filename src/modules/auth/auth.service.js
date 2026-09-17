@@ -1,6 +1,8 @@
 import User from "#modules/user/user.model.js";
+import { sendOTPMail } from "#shared/services/email.service.js";
 import generateToken from "#shared/services/genToken.service.js";
 import CustomError from "#shared/utils/CustomError.util.js";
+import generateOtp from "#shared/utils/otp.util.js";
 import bcrypt from "bcryptjs";
 
 export const signUpService = async ({
@@ -47,4 +49,24 @@ export const signInService = async ({ email, password }) => {
   const token = await generateToken({ id: user._id, expiry: "7d" });
 
   return { status: true, token };
+};
+
+export const sendOtpService = async ({ email }) => {
+  //search user
+  const user = await User.findOne({ email });
+  if (!user) throw new CustomError("User not found", 404);
+
+  //Generate otp
+  const { otp, otpExpiry } = generateOtp();
+  const hashedOtp = await bcrypt.hash(otp, 10);
+
+  user.otp = hashedOtp;
+  user.otpExpiresAt = otpExpiry;
+  user.isOtpVerified = false;
+
+  await user.save();
+
+  await sendOTPMail({ email, otp });
+
+  return true;
 };
