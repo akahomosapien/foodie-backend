@@ -22,6 +22,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //Routes
+app.get("/", (req, res) => {
+  return res.status(200).json({ message: "You are at foodie backend server" });
+});
 app.use("/api/v1/auth", authRouter);
 
 //error Middleware
