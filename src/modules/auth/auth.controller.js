@@ -6,6 +6,7 @@ import {
   sendOtpService,
   signInService,
   signUpService,
+  verifyOtpService,
 } from "./auth.service.js";
 
 export const signUp = asyncHandler(async (req, res) => {
@@ -55,4 +56,13 @@ export const sendOtp = asyncHandler(async (req, res) => {
   const data = await sendOtpService({ email });
 
   successResponse(res, "OTP sent to email successfully", data, 200);
+});
+
+export const verifyOtp = asyncHandler(async (req, res) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) throw new CustomError("Email & OTP are required", 422);
+
+  const data = await verifyOtpService({ email, otp });
+
+  successResponse(res, "Otp has been successfully verified", data, 200);
 });

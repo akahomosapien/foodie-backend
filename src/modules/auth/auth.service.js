@@ -70,3 +70,24 @@ export const sendOtpService = async ({ email }) => {
 
   return true;
 };
+
+export const verifyOtpService = async ({ email, otp }) => {
+  const user = await User.findOne({ email });
+
+  const isMatched = await bcrypt.compare(otp, user.otp);
+  //check otp
+  if (!isMatched) {
+    throw new CustomError("Incorrect Email or OTP", 401);
+  }
+  //check expiry
+  if (user.otpExpiresAt < Date.now()) {
+    throw new CustomError("OTP has expired", 401);
+  }
+
+  user.isOtpVerified = true;
+  user.otp = undefined;
+
+  await user.save();
+
+  return true;
+};
