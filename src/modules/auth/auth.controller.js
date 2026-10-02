@@ -3,6 +3,7 @@ import successResponse from "#shared/utils/apiResponse.util.js";
 import CustomError from "#shared/utils/CustomError.util.js";
 import setAuthCookie from "#shared/utils/setCookie.util.js";
 import {
+  resetPasswordService,
   sendOtpService,
   signInService,
   signUpService,
@@ -65,4 +66,18 @@ export const verifyOtp = asyncHandler(async (req, res) => {
   const data = await verifyOtpService({ email, otp });
 
   successResponse(res, "Otp has been successfully verified", data, 200);
+});
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new CustomError("Email & Password are required", 422);
+  }
+  if (password && password.length < 6) {
+    throw new CustomError("Password must be atleast 6 characters", 422);
+  }
+
+  const data = await resetPasswordService({ email, password });
+
+  successResponse(res, "Password changed successfully", data, 200);
 });

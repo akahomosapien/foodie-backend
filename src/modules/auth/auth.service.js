@@ -91,3 +91,20 @@ export const verifyOtpService = async ({ email, otp }) => {
 
   return true;
 };
+
+export const resetPasswordService = async ({ email, password }) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new CustomError("User not found", 404);
+  }
+  if (!user.isOtpVerified) {
+    throw new CustomError("OTP verification is required", 400);
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  user.password = hashedPassword;
+  user.isOtpVerified = false;
+  await user.save();
+
+  return true;
+};
